@@ -1,28 +1,38 @@
 """Change the attributes of the program here"""
+from dataclasses import dataclass
+
 """ ROAD GENERATION """
-#Number of nodes in the diagram
-NUM_NODES = 30
-#Maximum lanes a road can have
-#The capacity of the road = length * lanes
-MAX_LANES = 5
-#The maximum nodes a node can connect to
-MAX_DEGREE = 4
-#The probability of generating a connection to other nodes
-EDGE_PROB = 0.1
-#The ID of a list of nodes forcing to have a maximum degree of 2
-FORCE_SINGLE_ROAD = [12, 13, 14, 15, 16]
-#The connection limit of a node
-#e.g. if it is 4, then node 12 cannot connect with node 20 as is it too far apart
-CONNECTION_LIMIT = 4
-#whether to make a ring connection.
-#this will force to create a connection between the first node and the last node
-RING = True
+@dataclass
+class Config_road_generator:
+    # Number of nodes in the diagram
+    num_nodes: int
+    # Maximum lanes a road can have
+    # The capacity of the road = length * lanes
+    max_lanes: int
+    # The maximum nodes a node can connect to
+    max_degree: int
+    # The probability of generating a connection to other nodes
+    edge_prob: float
+    # The ID of a list of nodes forcing to have a maximum degree of 2
+    force_single_road: list
+    # The connection limit of a node
+    # e.g. if it is 4, then node 12 cannot connect with node 20 as is it too far apart
+    connection_limit: int
+    # whether to make a ring connection.
+    # this will force to create a connection between the first node and the last node
+    ring: bool
 
 """ CARS """
+@dataclass
+class Config_car_generator:
+    # Number of cars generated when the simulation starts
+    num_cars_initially: int
+    # The probability of generating a car every FRAME
+    new_car_prob: float
 #Number of cars generated when the simulation starts
-NUM_CARS_INITIALLY = 50
+NUM_CARS_INITIALLY = 100
 #The probability of generating a car every FRAME
-NEW_CAR_PROB = 0.1
+NEW_CAR_PROB = 0.2
 
 #pic
 #Frame per second
@@ -32,14 +42,14 @@ FPS = 30
 #When there is no congestion, the distance moved is SPEED/FPS
 SPEED = 1
 #The total frames in the simulatiom
-FRAMES = 6000
+FRAMES = 60000
 #The scale of every PNG file generated
 PIC_SCALE = 2
 #Whether generate pictures of the mid-process in the simulation
 SHOW_MID_PROCESS = False
 #The frequency of generating mid-process pictures
 #This will only be effective when SHOW_MID_PROCESS is True
-FRAMES_PER_OUTPUT = 20
+FRAMES_PER_OUTPUT = 50000
 #Whether automatically generate GIF file when the simulating
 #This will only be effective when SHOW_MID_PROCESS is True
 #If it is true, the mid-process pictures will not be generated

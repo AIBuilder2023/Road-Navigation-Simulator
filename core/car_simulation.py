@@ -17,21 +17,21 @@ def congestion_calculation(G,cars):
             G[edge[0]][edge[1]]['congestion'] = G[edge[0]][edge[1]]['cars'] / G[edge[0]][edge[1]]['capacity']
         G[edge[0]][edge[1]]['congestion_logs'].append(G[edge[0]][edge[1]]['congestion'])
 
-def cars_run(G,cars,FPS,SPEED):
+def cars_run(G,cars,SPEED):
     for i in cars:
         if not i.destination:
             if G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.1:
-                i.distance += SPEED / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.distance += SPEED / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.tot_distance += SPEED / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
             elif G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.4:
-                i.distance += SPEED / 2 / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / 2 / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.distance += SPEED / 2 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.tot_distance += SPEED / 2 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
             elif G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.6:
-                i.distance += SPEED / 3 / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / 3 / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.distance += SPEED / 3 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.tot_distance += SPEED / 3 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
             else:
-                i.distance += SPEED / 4 / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / 4 / FPS / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.distance += SPEED / 4 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+                i.tot_distance += SPEED / 4 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
 
             if i.distance >=1:
                 i.progress += 1
@@ -44,7 +44,7 @@ def cars_finish(cars):
         if i.route[i.progress] == i.endPt and not i.destination:
             i.destination = True
 
-def whole_process(G,cars,FPS,SPEED):
+def whole_process(G,cars,SPEED):
     congestion_calculation(G,cars)
-    cars_run(G,cars,FPS,SPEED)
+    cars_run(G,cars,SPEED)
     cars_finish(cars)

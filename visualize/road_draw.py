@@ -55,9 +55,8 @@ def draw(G,cars,t,frames):
     plt.title("Traffic Simulation", size=text_font_size)
     plt.axis("off")
 
-    stats = (f"FPS: {FPS}\n"
-             f"SPEED: {SPEED}\n"
-             f"Frame: {t}\n"
+    stats = (f"SPEED: {SPEED}\n"
+             f"Frames: {t}\n"
              f"Cars on road: {cars_on_road}\n"
              f"Cars passed: {cars_passed}")
     fig.text(

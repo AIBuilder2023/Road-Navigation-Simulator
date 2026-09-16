@@ -1,11 +1,11 @@
 import random
-
+from attributes import *
 
 class car():
     def __init__(self,NUM_NODES,pos):
         self.startPt = random.randint(0,NUM_NODES-1)
         self.endPt = self.startPt
-        while(self.startPt == self.endPt):
+        while self.startPt == self.endPt:
             self.endPt = random.randint(0,NUM_NODES-1)
 
         #self.startPt = pos[self.startPt]
@@ -16,3 +16,4 @@ class car():
         self.time_cost = 0
         self.destination = False
         self.tot_distance = 0
+

@@ -37,8 +37,7 @@ def draw(G,passed,avg_time,avg_speed):
     plt.title("Traffic Simulation Result - Congestion",size=text_font_size)
     plt.axis("off")
 
-    stats = (f"FPS: {FPS}\n"
-             f"SPEED: {SPEED}\n"
+    stats = (f"SPEED: {SPEED}\n"
              f"Car passed: {passed}\n"
              f"Avg time cost: {round(avg_time, 3)}({round(avg_time * FPS, 3)}frames)\n"
              f"Avg speed: {round(avg_speed, 3)}")
