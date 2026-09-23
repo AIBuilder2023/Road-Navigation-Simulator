@@ -21,6 +21,12 @@ class Config_road_generator:
     # whether to make a ring connection.
     # this will force to create a connection between the first node and the last node
     ring: bool
+    #expected average road length
+    exp_road_length: float
+    #variance of road length [0.00,1.00)
+    var_road_length: float
+    #variation of the angle [-pi/4,pi/4]
+    angle_variation: float
 
 """ CARS """
 @dataclass
@@ -29,27 +35,28 @@ class Config_car_generator:
     num_cars_initially: int
     # The probability of generating a car every FRAME
     new_car_prob: float
+    #maximum speed of a car to run if there is no congestion(km/h)
+    speed: int
 #Number of cars generated when the simulation starts
-NUM_CARS_INITIALLY = 100
+NUM_CARS_INITIALLY = 200
 #The probability of generating a car every FRAME
-NEW_CAR_PROB = 0.2
+NEW_CAR_PROB = 0.4
 
 #pic
 #Frame per second
+#Also representing frame per hour simulated in the program
 #This will affect the speed of car per frame and the generation of GIF file
-FPS = 30
-#The speed of car per frame
-#When there is no congestion, the distance moved is SPEED/FPS
-SPEED = 1
+FPS = 240
+
 #The total frames in the simulatiom
-FRAMES = 60000
+FRAMES = 24*60*30
 #The scale of every PNG file generated
 PIC_SCALE = 2
 #Whether generate pictures of the mid-process in the simulation
 SHOW_MID_PROCESS = False
 #The frequency of generating mid-process pictures
 #This will only be effective when SHOW_MID_PROCESS is True
-FRAMES_PER_OUTPUT = 50000
+FRAMES_PER_OUTPUT = 30
 #Whether automatically generate GIF file when the simulating
 #This will only be effective when SHOW_MID_PROCESS is True
 #If it is true, the mid-process pictures will not be generated

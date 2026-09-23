@@ -8,16 +8,17 @@ from io import BytesIO
 import sys
 
 def get_car_position_on_graph(G,car):
-    pos = nx.spring_layout(G, seed=114514, weight="weight")
+    #the real coordinates the generator stored in G
+    pos = nx.get_node_attributes(G, "pos")
     fromPt = car.route[car.progress]
     toPt = car.route[car.progress+1]
     fromPos = pos[fromPt]
     toPos = pos[toPt]
     return fromPos[0] + car.distance * (toPos[0] - fromPos[0]), fromPos[1]+car.distance * (toPos[1] - fromPos[1])
 
-def draw(G,cars,t,frames):
-    #position
-    pos = nx.spring_layout(G, seed=114514,weight="weight")
+def draw(G,cars,t,frames,speed):
+    #position - the real coordinates the generator stored in G, no spring_layout
+    pos = nx.get_node_attributes(G, "pos")
     #pos = nx.shell_layout(G)
     edges = G.edges()
 
@@ -26,8 +27,8 @@ def draw(G,cars,t,frames):
     norm = mcolors.Normalize(vmin=0, vmax=1)
     colors = [cmap(norm(G[e[0]][e[1]]["congestion"])) for e in edges]
 
-    #label
-    edge_labels = nx.get_edge_attributes(G, "length")
+    #label - rounded to 1 decimal, the lengths are real distances now
+    edge_labels = {e: round(l, 1) for e, l in nx.get_edge_attributes(G, "length").items()}
 
     #edge-width
     width = [(G[i[0]][i[1]]["capacity"]/G[i[0]][i[1]]["length"])*2 for i in edges]
@@ -55,7 +56,7 @@ def draw(G,cars,t,frames):
     plt.title("Traffic Simulation", size=text_font_size)
     plt.axis("off")
 
-    stats = (f"SPEED: {SPEED}\n"
+    stats = (f"SPEED: {speed}\n"
              f"Frames: {t}\n"
              f"Cars on road: {cars_on_road}\n"
              f"Cars passed: {cars_passed}")

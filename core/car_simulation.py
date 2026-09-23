@@ -17,7 +17,8 @@ def congestion_calculation(G,cars):
             G[edge[0]][edge[1]]['congestion'] = G[edge[0]][edge[1]]['cars'] / G[edge[0]][edge[1]]['capacity']
         G[edge[0]][edge[1]]['congestion_logs'].append(G[edge[0]][edge[1]]['congestion'])
 
-def cars_run(G,cars,SPEED):
+def cars_run(G,cars,cfg_car):
+    SPEED = cfg_car.speed / attributes.FPS
     for i in cars:
         if not i.destination:
             if G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.1:
