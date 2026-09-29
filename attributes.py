@@ -35,12 +35,22 @@ class Config_car_generator:
     num_cars_initially: int
     # The probability of generating a car every FRAME
     new_car_prob: float
-    #maximum speed of a car to run if there is no congestion(km/h)
-    speed: int
-#Number of cars generated when the simulation starts
-NUM_CARS_INITIALLY = 200
-#The probability of generating a car every FRAME
-NEW_CAR_PROB = 0.4
+
+
+""" SIMULATION """
+@dataclass
+class Config_simulator:
+    # maximum speed of a car to run if there is no congestion(km/h)
+    standard_speed: int
+    #length of the car [km]
+    car_length: float = 0.005
+    #minimum safe distance [km]
+    minimum_distance: float = 0.002
+    #reaction time [h]
+    reaction_time: float = 1.5/3600
+    #minimum speed even though the road is fully stuck [km/h]
+    minimum_speed: float = 5
+
 
 #pic
 #Frame per second
@@ -49,7 +59,7 @@ NEW_CAR_PROB = 0.4
 FPS = 240
 
 #The total frames in the simulatiom
-FRAMES = 24*60*30
+FRAMES = 240*10
 #The scale of every PNG file generated
 PIC_SCALE = 2
 #Whether generate pictures of the mid-process in the simulation

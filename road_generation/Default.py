@@ -97,7 +97,7 @@ def default_road(road_cfg:Config_road_generator):
         num += 1
 
     #start randomly generate nodes
-    for i in range(road_cfg.num_nodes):
+    for i in range(1,road_cfg.num_nodes):
         #choose a random existed node
         while True:
             father = random.choice(nodes)

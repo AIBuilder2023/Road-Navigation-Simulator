@@ -1,9 +1,20 @@
 import attributes
 import imageio
 from io import BytesIO
+from attributes import Config_simulator, Config_car_generator
 
+def speed_calculation(road:dict,cfg_simulation:Config_simulator):
+    if road['cars'] == 0:
+        v = cfg_simulation.standard_speed
+    else:
+        v = max(cfg_simulation.minimum_speed, min(
+            cfg_simulation.standard_speed, max(
+                0, ((road['lanes'] * road['length'] / road[
+                    'cars'] - cfg_simulation.car_length - cfg_simulation.minimum_distance) / cfg_simulation.reaction_time)
+            )))
+    return v
 
-def congestion_calculation(G,cars):
+def congestion_calculation(G,cars,cfg_simulation:Config_simulator):
     edges = G.edges()
     for edge in edges:
         G[edge[0]][edge[1]]['cars'] = 0
@@ -11,41 +22,30 @@ def congestion_calculation(G,cars):
         if not i.destination:
             G[i.route[i.progress]][i.route[i.progress + 1]]['cars'] += 1
     for edge in edges:
-        if G[edge[0]][edge[1]]['cars'] <= G[edge[0]][edge[1]]['capacity'] / G[edge[0]][edge[1]]['length']:
-            G[edge[0]][edge[1]]['congestion'] = 0
-        else:
-            G[edge[0]][edge[1]]['congestion'] = G[edge[0]][edge[1]]['cars'] / G[edge[0]][edge[1]]['capacity']
-        G[edge[0]][edge[1]]['congestion_logs'].append(G[edge[0]][edge[1]]['congestion'])
+        road = G[edge[0]][edge[1]]
+        v = speed_calculation(road,cfg_simulation)
+        road['congestion'] = 1-v/cfg_simulation.standard_speed
+        road['congestion_logs'].append(road['congestion'])
 
-def cars_run(G,cars,cfg_car):
-    SPEED = cfg_car.speed / attributes.FPS
+
+def cars_run(G,cars,cfg_car:Config_car_generator,cfg_simulation:Config_simulator):
     for i in cars:
         if not i.destination:
-            if G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.1:
-                i.distance += SPEED / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-            elif G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.4:
-                i.distance += SPEED / 2 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / 2 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-            elif G[i.route[i.progress]][i.route[i.progress + 1]]['congestion'] <= 0.6:
-                i.distance += SPEED / 3 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / 3 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-            else:
-                i.distance += SPEED / 4 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
-                i.tot_distance += SPEED / 4 / G[i.route[i.progress]][i.route[i.progress + 1]]['length']
+            road = G[i.route[i.progress]][i.route[i.progress + 1]]
+            v = speed_calculation(road,cfg_simulation)
+            v /= attributes.FPS
+            i.distance += v
+            i.tot_distance += v
+            #print(i.distance, road['length'], i.progress)
 
-            if i.distance >=1:
+            if i.distance >= road['length']:
                 i.progress += 1
                 i.distance = 0
+            i.time_cost += 1/attributes.FPS
+            if i.route[i.progress] == i.endPt:
+                i.destination = True
 
-            i.time_cost += 1
 
-def cars_finish(cars):
-    for i in cars:
-        if i.route[i.progress] == i.endPt and not i.destination:
-            i.destination = True
-
-def whole_process(G,cars,SPEED):
-    congestion_calculation(G,cars)
-    cars_run(G,cars,SPEED)
-    cars_finish(cars)
+def whole_process(G,cars,cfg_car,cfg_simulation):
+    cars_run(G,cars,cfg_car,cfg_simulation)
+    congestion_calculation(G, cars,cfg_simulation)
