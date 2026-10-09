@@ -2,7 +2,8 @@ import random
 from attributes import *
 
 class car():
-    def __init__(self,NUM_NODES,pos):
+    def __init__(self,id,NUM_NODES,pos):
+        self.id = id
         self.startPt = random.randint(0,NUM_NODES-1)
         self.endPt = self.startPt
         while self.startPt == self.endPt:

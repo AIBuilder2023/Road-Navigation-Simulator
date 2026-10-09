@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from attributes import *
 import math
 import random
-import networkx as nx
+from road_generation.classes import Road,Node
 
 UP = [0,1]
 DOWN = [0,-1]
@@ -26,22 +26,6 @@ DIRECTIONS = {
     -2:3 #down
 }
 INDEX_TO_DIR = [[1,0],[0,1],[-1,0],[0,-1]]
-
-@dataclass
-class Node:
-    id: int
-    pos: list
-    tiled_pos: list
-    #connection [right,up,left,down] n=connected to node id n  None=not
-    #NOTE: None is used instead of 0, because node 0 is a valid node id
-    connection: list
-    degrees: int=0
-
-@dataclass
-class Road:
-    ptA: int
-    ptB: int
-    length: float
 
 def default_road(road_cfg:Config_road_generator):
     """the road generation algorithm following real-life traffic situation
@@ -59,7 +43,8 @@ def default_road(road_cfg:Config_road_generator):
     nodes_degrees = [[],[],[],[],[]]
 
     def new_road(a:Node,b:Node):
-        road = Road(a.id,b.id, math.dist(a.pos,b.pos))
+        lanes = random.randint(1, road_cfg.max_lanes)
+        road = Road(a.id,b.id, math.dist(a.pos,b.pos),lanes)
         roads.append(road)
         a.degrees += 1
         b.degrees += 1
@@ -133,28 +118,5 @@ def default_road(road_cfg:Config_road_generator):
             #NOTE: these extra roads are not aligned to the tiled grid, so they
             #are NOT written into node.connection (only into the roads list)
             new_road(a, random.choice(cand))
+    return nodes,roads
 
-    ''' step 3 - turn the generator output into the Graph the simulation uses '''
-    G = nx.Graph()
-    for n in nodes:
-        #x/y are the real coordinates, tiled_pos is the grid cell of the node
-        G.add_node(n.id,
-                   pos=(n.pos[0], n.pos[1]),
-                   x=n.pos[0],
-                   y=n.pos[1],
-                   tiled_pos=(n.tiled_pos[0], n.tiled_pos[1]),
-                   degrees=n.degrees,
-                   connection=tuple(n.connection))
-    for r in roads:
-        lanes = random.randint(1, road_cfg.max_lanes)
-        #length is the real geometric distance, so the A* heuristic stays consistent
-        G.add_edge(r.ptA, r.ptB,
-                   weight=1 / r.length,
-                   length=r.length,
-                   lanes=lanes,
-                   capacity=r.length * lanes,
-                   congestion=0.0,
-                   cars=0,
-                   congestion_logs=[])
-
-    return G

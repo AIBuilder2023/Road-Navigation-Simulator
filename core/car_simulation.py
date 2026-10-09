@@ -45,7 +45,6 @@ def cars_run(G,cars,cfg_car:Config_car_generator,cfg_simulation:Config_simulator
             if i.route[i.progress] == i.endPt:
                 i.destination = True
 
-
 def whole_process(G,cars,cfg_car,cfg_simulation):
     cars_run(G,cars,cfg_car,cfg_simulation)
     congestion_calculation(G, cars,cfg_simulation)

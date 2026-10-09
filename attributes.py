@@ -57,7 +57,6 @@ class Config_simulator:
 #Also representing frame per hour simulated in the program
 #This will affect the speed of car per frame and the generation of GIF file
 FPS = 240
-
 #The total frames in the simulatiom
 FRAMES = 240*10
 #The scale of every PNG file generated
