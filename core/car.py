@@ -8,7 +8,6 @@ class car():
         self.endPt = self.startPt
         while self.startPt == self.endPt:
             self.endPt = random.randint(0,NUM_NODES-1)
-
         #self.startPt = pos[self.startPt]
         #self.endPt = pos[self.endPt]
         self.route = []
@@ -17,4 +16,7 @@ class car():
         self.time_cost = 0
         self.destination = False
         self.tot_distance = 0
+        self.logs = []
 
+    def asdict(self):
+        return {'id':self.id,'startPt':self.startPt,'endPt':self.endPt,'route':self.route,'time_cost':self.time_cost,'total_distance':self.tot_distance,'logs':self.logs}

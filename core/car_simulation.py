@@ -28,7 +28,7 @@ def congestion_calculation(G,cars,cfg_simulation:Config_simulator):
         road['congestion_logs'].append(road['congestion'])
 
 
-def cars_run(G,cars,cfg_car:Config_car_generator,cfg_simulation:Config_simulator):
+def cars_run(G,cars,cfg_car:Config_car_generator,cfg_simulation:Config_simulator,frame):
     for i in cars:
         if not i.destination:
             road = G[i.route[i.progress]][i.route[i.progress + 1]]
@@ -37,14 +37,15 @@ def cars_run(G,cars,cfg_car:Config_car_generator,cfg_simulation:Config_simulator
             i.distance += v
             i.tot_distance += v
             #print(i.distance, road['length'], i.progress)
-
             if i.distance >= road['length']:
                 i.progress += 1
                 i.distance = 0
+                i.logs.append(frame)
             i.time_cost += 1/attributes.FPS
             if i.route[i.progress] == i.endPt:
                 i.destination = True
+                i.logs.append("end")
 
-def whole_process(G,cars,cfg_car,cfg_simulation):
-    cars_run(G,cars,cfg_car,cfg_simulation)
+def whole_process(G,cars,cfg_car,cfg_simulation,frame):
+    cars_run(G,cars,cfg_car,cfg_simulation,frame)
     congestion_calculation(G, cars,cfg_simulation)

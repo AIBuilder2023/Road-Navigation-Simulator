@@ -19,4 +19,4 @@ class Road:
     length: float
     lanes: int
     def asdict(self):
-        return {"ptA":self.ptA,"ptB":self.ptB,"length":self.length}
+        return {"ptA":self.ptA,"ptB":self.ptB,"length":self.length,"lanes":self.lanes}

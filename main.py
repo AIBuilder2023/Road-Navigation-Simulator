@@ -1,5 +1,3 @@
-import networkx as nx
-
 from road_generation import generate
 from road_generation.Default import default_road
 import core.car as car
@@ -11,7 +9,7 @@ from attributes import *
 import core.logs_recording as recording
 from road_generation.generate import generate_graph
 
-
+import networkx as nx
 from time import time,localtime,strftime
 import random
 from tqdm import tqdm
@@ -20,7 +18,7 @@ import imageio
 
 ''' CONFIG '''
 cfg_road = Config_road_generator(
-    num_nodes=30 ,
+    num_nodes=30,
     max_lanes=5,
     max_degree=4,
     edge_prob=0.2,
@@ -54,20 +52,24 @@ for i in range(cfg_car.num_cars_initially):
     cars.append(car.car(num_cars+1,cfg_road.num_nodes,pos))
     astarRes = astar.astar(G,cars[i].startPt, cars[i].endPt,pos)
     cars[i].route = astarRes
+    cars[-1].logs.append(("Spawned", 0))
     num_cars += 1
 ''' PROCESSING '''
 frames = []
 for t in tqdm(range(FRAMES+1)):
-    processing.whole_process(G,cars,cfg_car,cfg_simulation)
+    processing.whole_process(G,cars,cfg_car,cfg_simulation,t)
     if SHOW_MID_PROCESS and t%FRAMES_PER_OUTPUT==0:
         visualize.draw(G,cars,t,frames,cfg_simulation.standard_speed)
     if random.random() < cfg_car.new_car_prob:
         cars.append(car.car(num_cars+1,cfg_road.num_nodes, pos))
         astarRes = astar.astar(G, cars[-1].startPt, cars[-1].endPt, pos)
         cars[-1].route = astarRes
+        cars[-1].logs.append(("Spawned",t))
         num_cars += 1
 
 ''' CALCULATE RESULTS'''
+recording.record_congestion(G)
+recording.record_car_logs(cars)
 passed = 0
 tot_time = 0
 tot_avg_speed = 0
@@ -78,6 +80,9 @@ for i in cars:
         tot_avg_speed += i.tot_distance / i.time_cost
 avg_time = tot_time/passed
 avg_speed = tot_avg_speed/num_cars
+
+''' REPORTS, RESULT IMAGES AND GIF'''
+recording.save_logs()
 result_congestion.draw(G,passed,avg_time,avg_speed,cfg_simulation.standard_speed)
 if GENERATE_GIF:
     imageio.mimsave(f"logs/gif/traffic{strftime('%Y%m%d-%H%M%S',localtime(time()))}.gif", frames, fps=FPS)

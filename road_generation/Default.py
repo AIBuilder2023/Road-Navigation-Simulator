@@ -104,6 +104,7 @@ def default_road(road_cfg:Config_road_generator):
     max_d = road_cfg.exp_road_length * (1+road_cfg.var_road_length)
 
     targets = {1: exp[0], 3: exp[1], 4: exp[2]}
+
     for deg, target in targets.items():
         while sum(1 for n in nodes if n.degrees == deg) < target:
             pool = [n for n in nodes if n.degrees == deg - 1]
